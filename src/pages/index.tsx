@@ -4,16 +4,12 @@ import { trpc } from "../utils/trpc";
 
 type QuestionCardProps = {
   question: string;
-  // description: string;
-  // documentation: string;
 };
 
 const Home: NextPage = () => {
-  const hello = trpc.useQuery(["example.hello", { text: "from tRPC" }]);
-  const { data, isLoading } = trpc.useQuery(["example.getAllQuestions"]);
+  const { data, isLoading } = trpc.useQuery(["question.get-all"]);
 
   if (isLoading || !data) return <div>Cargando...</div>;
-  console.log(data);
 
   return (
     <>
@@ -25,16 +21,13 @@ const Home: NextPage = () => {
 
       <main className="container mx-auto flex flex-col items-center justify-center min-h-screen p-4">
         <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
-          Create <span className="text-purple-300">T3</span> App
+          <span className="text-purple-300">Polls</span> App
         </h1>
-        <p className="text-2xl text-gray-700">This stack uses:</p>
+        <p className="text-2xl text-gray-700">Historial de preguntas:</p>
         <div className="grid gap-3 pt-3 mt-3 text-center md:grid-cols-2 lg:w-2/3">
           {data.map((q) => (
             <QuestionCard key={q.id} question={q.question} />
           ))}
-        </div>
-        <div className="pt-6 text-2xl text-blue-500 flex justify-center items-center w-full">
-          {hello.data ? <p>{hello.data.greeting}</p> : <p>Loading..</p>}
         </div>
       </main>
     </>
@@ -44,7 +37,7 @@ const Home: NextPage = () => {
 const QuestionCard = ({ question }: QuestionCardProps) => {
   return (
     <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105">
-      <h2 className="text-lg text-violet-500 ">{question}</h2>
+      <h2 className="text-lg text-violet-500 cursor-pointer">{question}</h2>
     </section>
   );
 };
