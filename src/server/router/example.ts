@@ -14,8 +14,8 @@ export const exampleRouter = createRouter()
       };
     },
   })
-  .query("getAll", {
+  .query("getAllQuestions", {
     async resolve({ ctx }) {
-      return await ctx.prisma.example.findMany();
+      return await ctx.prisma.pollQuestion.findMany();
     },
   });
