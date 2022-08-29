@@ -12,6 +12,10 @@ datasource db {
     referentialIntegrity = "prisma"
 }
 
-model Example {
+model PollQuestion {
     id String @id @default(cuid())
+    createdAt DateTime @default(now())
+
+    endsAt DateTime?
+    question String @db.VarChar(500)
 }
