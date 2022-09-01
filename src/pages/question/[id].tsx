@@ -28,7 +28,18 @@ const QuestionDetailPage: NextPage = () => {
 
   if (!data || isLoading) return <Loader />;
 
-  return <div>{data.question}</div>;
+  return (
+    <div>
+      <div>{data.question}</div>
+      <div>
+        {(data.options as string[]).map((opt, i) => (
+          <ul key={i}>
+            <li>{opt}</li>
+          </ul>
+        ))}
+      </div>
+    </div>
+  );
 };
 
 export default QuestionDetailPage;
