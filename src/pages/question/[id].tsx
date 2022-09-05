@@ -29,17 +29,55 @@ const QuestionDetailPage: NextPage = () => {
   if (!data || isLoading) return <Loader />;
 
   return (
-    <div>
-      <div>{data.question}</div>
-      <div>
-        {(data.options as string[]).map((opt, i) => (
-          <ul key={i}>
-            <li>{opt}</li>
-          </ul>
-        ))}
+    <div className="w-screen h-screen flex">
+      <div className="w-1/5 bg-gray-800 text-white">
+        <div className="flex items-center justify-center h-full">
+          <p>Total de votos: 0</p>
+        </div>
+      </div>
+      <div className="flex-auto p-6">
+        <header className="bg-white space-y-4 p-4">
+          <div>
+            <h2 className="font-semibold text-lg text-slate-900">
+              {data.question}
+            </h2>
+          </div>
+          <div>
+            {(data.options as string[]).map((opt, i) => (
+              <OptionsComponent key={i} str={opt} />
+            ))}
+          </div>
+        </header>
       </div>
     </div>
   );
 };
+
+type OptionsProps = {
+  str: string;
+};
+
+const OptionsComponent = ({ str }: OptionsProps) => (
+  <ul className="flex flex-col gap-1 mt-2">
+    <div>{str}</div>
+    <div className="flex gap-2">
+      <div className="w-full text-sm text-slate-900 rounded-md py-2 pl-10 ring-1 ring-slate-200 shadow-sm">
+        <p>0 %</p>
+      </div>
+      <a className="hover:bg-purple-400 cursor-pointer flex items-center rounded-md bg-purple-500 text-white text-sm font-medium pl-2 pr-3 py-2 shadow-sm">
+        <svg
+          width="20"
+          height="20"
+          fill="currentColor"
+          className="mr-1"
+          aria-hidden="true"
+        >
+          <path d="M10 5a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H6a1 1 0 1 1 0-2h3V6a1 1 0 0 1 1-1Z" />
+        </svg>
+        1
+      </a>
+    </div>
+  </ul>
+);
 
 export default QuestionDetailPage;
