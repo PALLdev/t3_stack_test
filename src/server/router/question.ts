@@ -2,11 +2,6 @@ import { z } from "zod";
 import { createRouter } from "./context";
 
 export const questionRouter = createRouter()
-  // .query("get-all", {
-  //   async resolve({ ctx }) {
-  //     return await ctx.prisma.pollQuestion.findMany();
-  //   },
-  // })
   .query("get-all-mine", {
     async resolve({ ctx }) {
       return await ctx.prisma.pollQuestion.findMany({
@@ -38,7 +33,7 @@ export const questionRouter = createRouter()
       question: z.string().min(5).max(500),
     }),
     async resolve({ ctx, input }) {
-      if (!ctx.token) return { error: "Unauthorized" };
+      if (!ctx.token) return;
       return await ctx.prisma.pollQuestion.create({
         data: {
           question: input.question,
