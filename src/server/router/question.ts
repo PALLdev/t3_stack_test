@@ -12,11 +12,14 @@ export const questionRouter = createRouter()
       id: z.string(),
     }),
     async resolve({ ctx, input }) {
-      return await ctx.prisma.pollQuestion.findFirst({
+      const question = await ctx.prisma.pollQuestion.findFirst({
         where: {
           id: input.id,
         },
       });
+      if (!question) return;
+
+      return { question, isOwner: question.ownerToken === ctx.token };
     },
   })
   .mutation("create", {
@@ -24,10 +27,12 @@ export const questionRouter = createRouter()
       question: z.string().min(5).max(500),
     }),
     async resolve({ ctx, input }) {
+      if (!ctx.token) return;
       return await ctx.prisma.pollQuestion.create({
         data: {
           question: input.question,
           options: [],
+          ownerToken: ctx.token,
         },
       });
     },

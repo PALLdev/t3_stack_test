@@ -30,20 +30,25 @@ const QuestionDetailPage: NextPage = () => {
 
   return (
     <div className="w-screen h-screen flex">
-      <div className="w-1/5 bg-gray-800 text-white">
-        <div className="flex items-center justify-center h-full">
-          <p>Total de votos: 0</p>
+      <div className="w-1/5 bg-gray-800">
+        <div className="flex flex-col items-center justify-center h-full gap-8">
+          {data.isOwner && (
+            <div className="bg-purple-700 p-3 text-white rounded-md">
+              Creaste esta pregunta!
+            </div>
+          )}
+          <p className="text-white">Total de votos: 0</p>
         </div>
       </div>
       <div className="flex-auto p-6">
         <header className="bg-white space-y-4 p-4">
           <div>
             <h2 className="font-semibold text-lg text-slate-900">
-              {data.question}
+              {data.question.question}
             </h2>
           </div>
           <div>
-            {(data.options as string[]).map((opt, i) => (
+            {(data.question.options as string[]).map((opt, i) => (
               <OptionsComponent key={i} str={opt} />
             ))}
           </div>
