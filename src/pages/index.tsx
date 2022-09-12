@@ -10,7 +10,7 @@ type QuestionCardProps = {
 };
 
 const Home: NextPage = () => {
-  const { data, isLoading } = trpc.useQuery(["question.get-all"]);
+  const { data, isLoading } = trpc.useQuery(["question.get-all-mine"]);
 
   if (isLoading || !data) return <Loader />;
 
@@ -29,14 +29,21 @@ const Home: NextPage = () => {
         <h1 className="text-5xl md:text-[5rem] leading-normal font-extrabold text-gray-700">
           <span className="text-purple-300">Polls</span> App
         </h1>
-        <p className="text-2xl text-gray-700">Historial de preguntas</p>
-        <div className="grid gap-3 pt-3 mt-3 text-center md:grid-cols-2 lg:w-2/3">
-          {data.map((q, i) => (
-            <QuestionCard key={i} id={q.id} question={q.question} />
-          ))}
+        <div className="grid gap-3 my-6 text-center md:grid-cols-2 lg:w-2/3">
+          {data.length === 0 ? (
+            <div className="text-2xl text-gray-700 block">
+              <p className="text-center">Aún no has creado votaciones.</p>
+            </div>
+          ) : (
+            data.map((q, i) => (
+              <QuestionCard key={i} id={q.id} question={q.question} />
+            ))
+          )}
         </div>
-        <div className="pt-6 w-full">
-          <p className="text-2xl text-gray-700 text-center">Nueva pregunta</p>
+        <div className="py-4 mt-3 w-full rounded-3xl bg-slate-300">
+          <p className="text-2xl text-gray-700 text-center font-extrabold">
+            Nueva votación
+          </p>
           <QuestionForm />
         </div>
       </main>
@@ -50,7 +57,7 @@ const QuestionForm = () => {
 
   const { mutate, isLoading } = trpc.useMutation("question.create", {
     onSuccess: () => {
-      client.invalidateQueries("question.get-all");
+      client.invalidateQueries("question.get-all-mine");
     },
   });
 
@@ -64,7 +71,7 @@ const QuestionForm = () => {
   return (
     <form onSubmit={submitQuestionHandler} className="py-4 w-full">
       <div className="flex flex-col px-12">
-        <label htmlFor="question" className="text-lg">
+        <label htmlFor="question" className="text-lg mb-2">
           Tu pregunta:
         </label>
         <input
@@ -80,7 +87,7 @@ const QuestionForm = () => {
         <button
           disabled={isLoading}
           type={"submit"}
-          className="bg-purple-300 text-gray-700 ring-1 ring-purple-300 text-lg px-6 py-1 mt-2 rounded-md shadow-sm hover:opacity-80"
+          className="bg-purple-300 text-gray-700 font-semibold ring-1 ring-purple-300 text-lg px-6 py-1 mt-2 rounded-md shadow-sm hover:opacity-80"
         >
           Crear
         </button>
@@ -91,13 +98,13 @@ const QuestionForm = () => {
 
 const QuestionCard = ({ id, question }: QuestionCardProps) => {
   return (
-    <section className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105">
+    <article className="flex flex-col justify-center p-6 duration-500 border-2 border-gray-500 rounded shadow-xl motion-safe:hover:scale-105">
       <Link href={`/question/${id}`}>
         <a>
           <h2 className="text-lg text-violet-500 cursor-pointer">{question}</h2>
         </a>
       </Link>
-    </section>
+    </article>
   );
 };
 
@@ -119,7 +126,7 @@ export const Loader = () => (
           fill="currentFill"
         />
       </svg>
-      <span className="sr-only">Loading...</span>
+      <span className="sr-only">Cargando...</span>
     </div>
   </div>
 );

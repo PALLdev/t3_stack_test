@@ -38,6 +38,13 @@ const QuestionDetailPage: NextPage = () => {
             </div>
           )}
           <p className="text-white">Total de votos: 0</p>
+          <div>
+            <Link href={"/"}>
+              <a className="text-purple-400 border border-purple-400 rounded-lg p-2 hover:opacity-90">
+                Home
+              </a>
+            </Link>
+          </div>
         </div>
       </div>
       <div className="flex-auto p-6">
