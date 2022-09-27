@@ -18,7 +18,7 @@ const getBaseUrl = () => {
 };
 
 export default withTRPC<AppRouter>({
-  config() {
+  config({ ctx }) {
     /**
      * If you want to use SSR, you need to use the server's full URL
      * @link https://trpc.io/docs/ssr
@@ -26,6 +26,11 @@ export default withTRPC<AppRouter>({
     const url = `${getBaseUrl()}/api/trpc`;
 
     return {
+      headers() {
+        return {
+          cookie: ctx?.req?.headers.cookie,
+        };
+      },
       links: [
         loggerLink({
           enabled: (opts) =>
@@ -45,5 +50,5 @@ export default withTRPC<AppRouter>({
   /**
    * @link https://trpc.io/docs/ssr
    */
-  ssr: false,
+  ssr: true,
 })(MyApp);
