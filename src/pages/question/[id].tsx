@@ -1,7 +1,7 @@
 import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { Loader } from "..";
+import Loader from "../../components/ui/loader";
 import { trpc } from "../../utils/trpc";
 
 const QuestionDetailPage: NextPage = () => {

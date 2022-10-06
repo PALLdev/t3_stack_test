@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { createQuestionValidator } from "../../utils/shared/create-question-validator";
 import { createRouter } from "./context";
 
 export const questionRouter = createRouter()
@@ -31,11 +32,9 @@ export const questionRouter = createRouter()
     },
   })
   .mutation("create", {
-    input: z.object({
-      question: z.string().min(5).max(500),
-    }),
+    input: createQuestionValidator,
     async resolve({ ctx, input }) {
-      if (!ctx.token) return;
+      if (!ctx.token) throw new Error("NO AUTORIZADO");
       return await ctx.prisma.pollQuestion.create({
         data: {
           question: input.question,
