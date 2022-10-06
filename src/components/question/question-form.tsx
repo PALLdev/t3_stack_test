@@ -1,5 +1,5 @@
 import { trpc } from "../../utils/trpc";
-import { useForm, SubmitHandler } from "react-hook-form";
+import { useForm, SubmitHandler, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   CreateQuestionInputType,
@@ -10,16 +10,20 @@ import { useRouter } from "next/router";
 export default function QuestionForm() {
   const router = useRouter();
   const {
+    control,
     handleSubmit,
     register,
     formState: { errors },
   } = useForm<CreateQuestionInputType>({
     resolver: zodResolver(createQuestionValidator),
+    defaultValues: {
+      options: [{ text: "Si" }, { text: "No" }],
+    },
   });
 
   const { mutate, isLoading, data } = trpc.useMutation("question.create", {
     onSuccess(addedQuestion) {
-      router.replace(`/question/${addedQuestion.id}`);
+      router.push(`/question/${addedQuestion.id}`);
     },
   });
 
@@ -28,6 +32,11 @@ export default function QuestionForm() {
   ) => {
     mutate(formData);
   };
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "options",
+  });
 
   if (isLoading || data)
     return (
@@ -56,7 +65,7 @@ export default function QuestionForm() {
   return (
     <form
       onSubmit={handleSubmit(submitQuestionHandler)}
-      className="py-4 w-full"
+      className="py-4 w-full "
     >
       <div className="flex flex-col px-12">
         <label htmlFor="question" className="text-lg mb-2">
@@ -67,11 +76,44 @@ export default function QuestionForm() {
           className="border-2 px-2 py-1 text-lg focus:outline-violet-500"
         />
         {errors.question && (
-          <span className="text-red-700 text-sm">
+          <span className="text-red-700 text-sm mb-1">
             {errors.question.message}
           </span>
         )}
+
+        <label htmlFor="options" className="text-lg mb-2">
+          Opciones:
+        </label>
+        <div className="flex flex-col gap-2">
+          {fields.map((field, index) => (
+            <div key={index} className="flex gap-6 items-center">
+              <input
+                className="px-2 py-1 rounded-md"
+                key={field.id} // important to include key with field's id
+                {...register(`options.${index}.text`)}
+              />
+              {fields.length > 2 && (
+                <button
+                  type="button"
+                  className="bg-red-300 px-6 py-1 rounded-md"
+                  onClick={() => remove(index)}
+                  disabled={fields.length <= 2}
+                >
+                  Quitar
+                </button>
+              )}
+            </div>
+          ))}
+          <button
+            type="button"
+            className="bg-purple-300 px-2 py-1 mb-2 rounded-md"
+            onClick={() => append({ text: "nueva" })}
+          >
+            Agregar opción
+          </button>
+        </div>
       </div>
+
       <div className="container text-center">
         <input
           disabled={isLoading}

@@ -55,8 +55,8 @@ const QuestionDetailPage: NextPage = () => {
             </h2>
           </div>
           <div>
-            {(data.question.options as string[]).map((opt, i) => (
-              <OptionsComponent key={i} str={opt} />
+            {(data.question.options as { text: string }[]).map((opt, i) => (
+              <OptionsComponent key={i} str={opt.text} />
             ))}
           </div>
         </header>
