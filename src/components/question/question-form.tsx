@@ -22,7 +22,7 @@ export default function QuestionForm() {
   });
 
   const { mutate, isLoading, data } = trpc.useMutation("question.create", {
-    onSuccess(addedQuestion) {
+    onSuccess: (addedQuestion) => {
       router.push(`/question/${addedQuestion.id}`);
     },
   });
@@ -38,6 +38,7 @@ export default function QuestionForm() {
     name: "options",
   });
 
+  // edit loader component to use it here
   if (isLoading || data)
     return (
       <div className="py-10 grid place-items-center">
@@ -63,63 +64,79 @@ export default function QuestionForm() {
     );
 
   return (
-    <form
-      onSubmit={handleSubmit(submitQuestionHandler)}
-      className="py-4 w-full "
-    >
-      <div className="flex flex-col px-12">
-        <label htmlFor="question" className="text-lg mb-2">
-          Tu pregunta:
-        </label>
-        <input
-          {...register("question")}
-          className="border-2 px-2 py-1 text-lg focus:outline-violet-500"
-        />
-        {errors.question && (
-          <span className="text-red-700 text-sm mb-1">
-            {errors.question.message}
-          </span>
-        )}
+    <form onSubmit={handleSubmit(submitQuestionHandler)} className="py-4">
+      <div className="flex flex-col px-24">
+        <div className="flex flex-col">
+          <label htmlFor="question" className="text-lg mb-2 font-semibold">
+            Tu pregunta:
+          </label>
+          <input
+            {...register("question")}
+            className="border-2 px-2 py-1 text-lg focus:outline-violet-500"
+          />
+          {errors.question && (
+            <span className="text-red-700 text-sm my-1">
+              {errors.question.message}
+            </span>
+          )}
+        </div>
 
-        <label htmlFor="options" className="text-lg mb-2">
-          Opciones:
-        </label>
-        <div className="flex flex-col gap-2">
-          {fields.map((field, index) => (
-            <div key={index} className="flex gap-6 items-center">
-              <input
-                className="px-2 py-1 rounded-md"
-                key={field.id} // important to include key with field's id
-                {...register(`options.${index}.text`)}
-              />
-              {fields.length > 2 && (
+        <div className="flex items-center gap-6">
+          <div>
+            <label
+              htmlFor="options"
+              className="text-lg font-semibold block my-4"
+            >
+              Alternativas:
+            </label>
+
+            <div className="flex items-center gap-6">
+              <ul className="flex flex-col gap-3">
+                {fields.map((field, index) => (
+                  <li key={field.id} className="flex gap-2 items-center">
+                    <input
+                      className="px-2 py-1 rounded-md focus:outline-violet-500"
+                      key={field.id} // important to include key with field's id
+                      {...register(`options.${index}.text`)}
+                    />
+                    {fields.length > 2 && (
+                      <button
+                        type="button"
+                        className="bg-red-300 px-4 py-1 rounded-md font-bold"
+                        onClick={() => remove(index)}
+                        disabled={fields.length <= 2}
+                      >
+                        X
+                      </button>
+                    )}
+                  </li>
+                ))}
+              </ul>
+              <div>
                 <button
                   type="button"
-                  className="bg-red-300 px-6 py-1 rounded-md"
-                  onClick={() => remove(index)}
-                  disabled={fields.length <= 2}
+                  className="font-extrabold border-2 border-purple-500 bg-purple-200 text-purple-700 px-4 py-1 rounded-md hover:opacity-80"
+                  onClick={() => append({ text: "" })}
                 >
-                  Quitar
+                  +
                 </button>
-              )}
+              </div>
             </div>
-          ))}
-          <button
-            type="button"
-            className="bg-purple-300 px-2 py-1 mb-2 rounded-md"
-            onClick={() => append({ text: "nueva" })}
-          >
-            Agregar opción
-          </button>
+            {errors.options && (
+              <span className="text-red-700 text-sm my-1">
+                {errors.options.message}
+              </span>
+            )}
+          </div>
         </div>
       </div>
 
-      <div className="container text-center">
+      <div className="text-center">
         <input
           disabled={isLoading}
           type={"submit"}
           value="Crear"
-          className="cursor-pointer bg-purple-300 text-gray-700 font-semibold ring-1 ring-purple-300 text-lg px-6 py-1 mt-2 rounded-md shadow-sm hover:opacity-80"
+          className="cursor-pointer bg-purple-300 font-semibold ring-1 ring-purple-600 text-purple-700 text-lg px-6 py-1 mt-2 rounded-md shadow-sm hover:opacity-80"
         />
       </div>
     </form>
