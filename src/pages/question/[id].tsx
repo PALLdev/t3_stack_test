@@ -1,6 +1,8 @@
 import { NextPage } from "next";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useState } from "react";
+import OptionsComponent from "../../components/question/options";
 import Loader from "../../components/ui/loader";
 import { trpc } from "../../utils/trpc";
 
@@ -12,6 +14,14 @@ const QuestionDetailPage: NextPage = () => {
     "question.get-by-id",
     { id: id as string },
   ]);
+
+  const [voted, setVoted] = useState(data?.vote ? true : false);
+
+  const { mutate, data: voteResponse } = trpc.useMutation([
+    "question.vote-on-question",
+  ]);
+
+  if (!data || isLoading) return <Loader />;
 
   if (!data && !isLoading) {
     return (
@@ -26,7 +36,19 @@ const QuestionDetailPage: NextPage = () => {
     );
   }
 
-  if (!data || isLoading) return <Loader />;
+  const handleVote = (index: number) => {
+    mutate(
+      {
+        questionId: data.question.id,
+        option: index,
+      },
+      {
+        onSuccess() {
+          setVoted(true);
+        },
+      }
+    );
+  };
 
   return (
     <div className="w-screen h-screen flex">
@@ -55,41 +77,21 @@ const QuestionDetailPage: NextPage = () => {
             </h2>
           </div>
           <div>
-            {(data.question.options as { text: string }[]).map((opt, i) => (
-              <OptionsComponent key={i} str={opt.text} />
-            ))}
+            <ul className="mt-2">
+              {(data.question.options as { text: string }[]).map((opt, i) => (
+                <OptionsComponent
+                  key={i}
+                  text={opt.text}
+                  onVote={handleVote.bind(null, i)}
+                  hasVoted={voted}
+                />
+              ))}
+            </ul>
           </div>
         </header>
       </div>
     </div>
   );
 };
-
-type OptionsProps = {
-  str: string;
-};
-
-const OptionsComponent = ({ str }: OptionsProps) => (
-  <ul className="flex flex-col gap-1 mt-2">
-    <div>{str}</div>
-    <div className="flex gap-2">
-      <div className="w-full text-sm text-slate-900 rounded-md py-2 pl-10 ring-1 ring-slate-200 shadow-sm">
-        <p>0 %</p>
-      </div>
-      <a className="hover:bg-purple-400 cursor-pointer flex items-center rounded-md bg-purple-500 text-white text-sm font-medium pl-2 pr-3 py-2 shadow-sm">
-        <svg
-          width="20"
-          height="20"
-          fill="currentColor"
-          className="mr-1"
-          aria-hidden="true"
-        >
-          <path d="M10 5a1 1 0 0 1 1 1v3h3a1 1 0 1 1 0 2h-3v3a1 1 0 1 1-2 0v-3H6a1 1 0 1 1 0-2h3V6a1 1 0 0 1 1-1Z" />
-        </svg>
-        1
-      </a>
-    </div>
-  </ul>
-);
 
 export default QuestionDetailPage;

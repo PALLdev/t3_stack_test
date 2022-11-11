@@ -31,7 +31,12 @@ model PollQuestion {
 model Vote {
     id String @id @default(cuid())
     createdAt DateTime @default(now())
+    voterToken String @db.VarChar(500)
     choice Int
     question PollQuestion @relation(fields: [questionId], references: [id])
     questionId String
+
+    @@unique([questionId, voterToken])
+    @@index([voterToken])
+    @@index([questionId])
 }
